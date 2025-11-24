@@ -28,6 +28,12 @@ class TaskController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 10));
 
+            /**
+             * this success method is from ApiResponse trait
+             * and TaskResource is used to format each task item
+             * use collection method because $tasks is a group of items
+             */
+
         return $this->success([
             'items' => TaskResource::collection($tasks),
             'meta'  => [
@@ -48,12 +54,23 @@ class TaskController extends Controller
             ['user_id' => Auth::id()]
         ));
 
-        return $this->success(new TaskResource($task), 'Task created successfully.', 201);
+        /*
+            this success method is from ApiResponse trait
+            and TaskResource is used to format the response
+            use new TaskResource($task) because it's a single item
+        */
+        return $this->success(
+            new TaskResource($task),
+            'Task created successfully.',
+            201);
     }
 
     // GET /tasks/{task}
     public function show(Task $task)
     {
+        /**
+         * this authorize method checks if the authenticated user
+         */
         $this->authorize('view', $task);
         return new TaskResource($task);
     }
